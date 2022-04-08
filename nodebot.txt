@@ -1,0 +1,42 @@
+export async function main(ns)
+{ await ns.disableLog('ALL');
+  while(true)
+  { var node=0;
+    var item='New Node';
+    var lowest=await ns.hacknet.getPurchaseNodeCost();
+    var count=await ns.hacknet.numNodes();
+    for (var i=0;i<count;i++)
+    { var level=await ns.hacknet.getLevelUpgradeCost(i,1);
+      var ram=await ns.hacknet.getRamUpgradeCost(i,1);
+      var core=await ns.hacknet.getCoreUpgradeCost(i,1);
+      if(await ns.hacknet.getNodeStats(i).level<200)
+      { if(level<lowest)
+        { lowest=level;
+          node=i;
+          item='Level';
+        }
+      }
+      if(await ns.hacknet.getNodeStats(i).ram<64)
+      { if(ram<lowest)
+        { lowest=ram;
+          node=i;
+          item='RAM';
+        }
+      }
+      if(await ns.hacknet.getNodeStats(i).cores<16)
+      { if(core<lowest)
+        { lowest=core;
+          node=i;
+          item='Core';
+        }
+      }
+    }
+    var mult=Math.floor(count/3);
+    if (mult<1) { mult=1; }
+    while(await ns.getServerMoneyAvailable('home')<lowest*mult) { await ns.sleep(5000); }
+    if(item=='New Node') { await ns.hacknet.purchaseNode(); }
+    if(item=='Level') { await ns.hacknet.upgradeLevel(node); }
+    if(item=='RAM') { await ns.hacknet.upgradeRam(node); }
+    if(item=='Core') { await ns.hacknet.upgradeCore(node); }
+  } // end while
+} // end main

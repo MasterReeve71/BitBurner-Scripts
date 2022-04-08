@@ -1,0 +1,72 @@
+////////////////////////////////////////////////////////////////////////////////////////////////
+// This script takes the list of all hackable servers in the game and pares it down to a list //
+// made up hackable servers that have Max Money greater than zero and enough RAM to run the   //
+// 'autohacker.js' script.                                                                    //
+//                                                                                            //
+// 1) copy 'autohacker.js' to all servers that have Max Money > 0                             //
+// 2) explicitly run 'autohacker.js' on 'home' with 'n00dles' as each of the four arguments   //
+// 3) find a server for which you have Root Access                                            //
+// 4) kill all scripts running on that server                                                 //
+// 5) run  'autohacker.js' on that server using as many threads as possible, giving that      //
+//    server as all the arguments (targets) for the script                                    //
+// 6) remove that server from the list                                                        //
+//                                                                                            //
+// Repeat steps 3-6 until there are no more servers in the list.                              //
+////////////////////////////////////////////////////////////////////////////////////////////////
+export async function main(ns)
+{ const allsrv = ['n00dles','foodnstuff','sigma-cosmetics','joesguns','nectar-net','hong-fang-tea','harakiri-sushi','neo-net','zer0','max-hardware','iron-gym','phantasy','silver-helix','omega-net','crush-fitness','johnson-ortho','the-hub','computek','netlink','rothman-uni','catalyst','summit-uni','rho-construction','millenium-fitness','aevum-police','alpha-ent','syscore','lexo-corp','snap-fitness','global-pharm','applied-energetics','unitalife','univ-energy','nova-med','zb-def','zb-institute','vitalife','titan-labs','solaris','microdyne','helios','deltaone','icarus','zeus-med','omnia','defcomm','galactic-cyber','infocomm','taiyang-digital','stormtech','aerocorp','clarkinc','omnitek','nwo','4sigma','blade','b-and-a','ecorp','fulcrumtech','megacorp','kuai-gong','fulcrumassets','powerhouse-fitness'];
+  var list=[];
+  for (var i=0; i<allsrv.length; i++)
+  { if (ns.getServerMaxMoney(allsrv[i])>0)
+    { list.push(allsrv[i]);
+      await ns.scp('autohacker.js','home',allsrv[i]);
+    }
+  }
+  const myHack=ns.getHackingLevel();
+  var notDone=true;
+  while (notDone)
+  { var count=0;
+    for (var i=0; i<list.length; i++)
+    { if (ns.hasRootAccess(list[i]))
+      { count++;
+       if (!ns.scriptRunning('autohacker.js',list[i]))
+       { 
+          await ns.killall(list[i]);
+          if(ns.getServerMaxRam(list[i])>=ns.getScriptRam('autohacker.js',list[i]))
+          { await ns.exec('autohacker.js',list[i],Math.floor(ns.getServerMaxRam(list[i])/ns.getScriptRam('autohacker.js',list[i])),list[i],list[i],list[i],list[i]);
+          }
+        }
+      }
+      else
+      { var ports=0;
+        if (await ns.getServerNumPortsRequired(list[i])>0)
+        { if (await ns.fileExists('BruteSSH.exe','home'))
+          { await ns.brutessh(list[i]); ports++;
+          }
+          if (await ns.fileExists('FTPCrack.exe','home'))
+          { await ns.ftpcrack(list[i]); ports++;
+          }
+          if (await ns.fileExists('relaySMTP.exe','home'))
+          { await ns.relaysmtp(list[i]); ports++;
+          }
+          if (await ns.fileExists('HTTPWorm.exe','home'))
+          { await ns.httpworm(list[i]); ports++;
+          }
+          if (await ns.fileExists('SQLInject.exe','home'))
+          { await ns.sqlinject(list[i]); ports++;
+          }
+          if (ports>=await ns.getServerNumPortsRequired(list[i]))
+          { await ns.nuke(list[i]);
+          }
+        }
+        else
+        { await ns.nuke(list[i]);
+        }
+      }
+    }
+    if (count==list.length)
+    { notDone=false;
+    }
+    await ns.sleep(5000);
+  }
+}
