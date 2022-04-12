@@ -38,8 +38,8 @@ export async function main(ns)
        { 
           await ns.killall(list[i]);
           if(ns.getServerMaxRam(list[i])>=ns.getScriptRam('autohacker.js',list[i]))
-          { await ns.exec('autohacker.js',list[i],Math.floor(ns.getServerMaxRam(list[i])/ns.getScriptRam('autohacker.js',list[i])),list[i],list[i],list[i],list[i]);
-            await ns.print('running autohacker.js on ',list[i]);
+          { 
+            await ns.exec('autohacker.js',list[i],Math.floor(ns.getServerMaxRam(list[i])/ns.getScriptRam('autohacker.js',list[i])),list[i],list[i],list[i],list[i]);
           }
         }
       }
@@ -57,6 +57,7 @@ export async function main(ns)
     }
     await ns.sleep(5000);
   }
+  await ns.toast('START: complete!','info',30000);
 } // end main
 
 /////////////////////////////////////////////////////////
@@ -85,7 +86,7 @@ async function try_to_root(ns,host)
   }
   if (x >= await ns.getServerNumPortsRequired(host))
   { await ns.nuke(host);
-    await ns.print(host, 'rooted - nuking');
+    await ns.toast('nuke('+host+')','info',2000);
   }
   return;
 } // end try_to_root
@@ -93,7 +94,7 @@ async function try_to_root(ns,host)
 /////////////////////////////////////////////////////////
 
 async function list_of_all_servers(ns,list)
-{ const purchased_servers=['srv01','srv02','srv03','srv04','srv05','srv06','srv07','srv08','srv09','srv10','srv11','srv12','srv13','srv14','srv15','srv16','srv17','srv18','srv19','srv20','srv21','srv22','srv23'];
+{ const purchased_servers=['srv01','srv02','srv03','srv04','srv05','srv06','srv07','srv08','srv09','srv10','srv11','srv12','srv13','srv14','srv15','srv16','srv17','srv18','srv19','srv20','srv21','srv22','srv23','srv24'];
   const hosts=await allServers(ns,'home');
   var list=[];
   for (var i=0; i<hosts.length; i++)
@@ -108,7 +109,7 @@ async function list_of_all_servers(ns,list)
 /////////////////////////////////////////////////////////
 
 async function allServers(ns,start,found)
-{ const purchased_servers=['srv01','srv02','srv03','srv04','srv05','srv06','srv07','srv08','srv09','srv10','srv11','srv12','srv13','srv14','srv15','srv16','srv17','srv18','srv19','srv20','srv21','srv22','srv23'];
+{ const purchased_servers=['srv01','srv02','srv03','srv04','srv05','srv06','srv07','srv08','srv09','srv10','srv11','srv12','srv13','srv14','srv15','srv16','srv17','srv18','srv19','srv20','srv21','srv22','srv23','srv24'];
 	if(!found)
   { found = new Set([]);
   }

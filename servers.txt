@@ -1,0 +1,173 @@
+export async function main(ns) { 
+
+await ns.disableLog('ALL');
+
+const purchased_servers = ['srv01','srv02','srv03','srv04','srv05','srv06','srv07','srv08','srv09','srv10','srv11','srv12','srv13','srv14','srv15','srv16','srv17','srv18','srv19','srv20','srv21','srv22','srv23','srv24'];
+const possible_targets = ['n00dles','foodnstuff','sigma-cosmetics','joesguns','nectar-net','hong-fang-tea','harakiri-sushi','neo-net','zer0','max-hardware','iron-gym','phantasy','silver-helix','omega-net','crush-fitness','johnson-ortho','the-hub','computek','netlink','rothman-uni','catalyst','summit-uni','rho-construction','millenium-fitness','aevum-police','alpha-ent','syscore','lexo-corp','snap-fitness','global-pharm','applied-energetics','unitalife','univ-energy','nova-med','zb-def','zb-institute','vitalife','titan-labs','solaris','microdyne','helios','deltaone','icarus','zeus-med','omnia','defcomm','galactic-cyber','infocomm','taiyang-digital','stormtech','aerocorp','clarkinc','omnitek','nwo','4sigma','blade','b-and-a','ecorp','fulcrumtech','megacorp','kuai-gong','fulcrumassets','powerhouse-fitness'];
+
+var UPGRADE = false;
+var server_RAM = 4;
+
+if (await ns.serverExists(purchased_servers[0]))
+{
+  UPGRADE = true;
+  server_RAM = await ns.getServerMaxRam(purchased_servers[0]) * 4;
+}
+
+if (UPGRADE)
+{
+  await ns.toast('UPGRADING SERVERS','info',10000);
+}
+else
+{
+  await ns.toast('DEPLOYING SERVERS','info',10000);
+}
+
+await ns.sleep(1000);
+
+var targets = [];
+
+for (var i=0; i<possible_targets.length; i++)
+{
+  if (await ns.getServerMaxMoney(possible_targets[i]) > 0)
+  {
+    targets.push(possible_targets[i]);
+  }
+}
+await ns.sleep(1000);
+
+for (var i=0; i<targets.length; i++)
+{
+  for (var j=i+1; j<targets.length; j++)
+  {
+    if (await ns.getServerMinSecurityLevel(targets[i]) > await ns.getServerMinSecurityLevel(targets[j]))
+    {
+      var temp = targets[i];
+      targets[i] = targets[j];
+      targets[j] = temp;
+    }
+  }  
+}
+await ns.sleep(1000);
+
+const total_cost = await ns.getPurchasedServerCost(server_RAM) * (purchased_servers.length);
+
+if (await ns.getServerMoneyAvailable('home') < total_cost)
+{
+  if (UPGRADE)
+  {
+    await ns.toast('SERVER UPGRADES require '+await ns.nFormat(total_cost,'$0.000a'),'error',15000);
+  }
+  else
+  {
+    await ns.toast('SERVER DEPLOYMENT requires '+await ns.nFormat(total_cost,'$0.000a'),'error',15000);
+  }
+}
+else
+{
+  if (UPGRADE)
+  {
+    for (var i=0; i<purchased_servers.length; i++)
+    {
+      await ns.killall(purchased_servers[i]);
+      await ns.deleteServer(purchased_servers[i]);
+    }
+  }
+  await ns.sleep(1000);
+
+
+  for (var i=0; i<purchased_servers.length; i++)
+  {
+    await ns.purchaseServer(purchased_servers[i],server_RAM);
+  }
+  await ns.sleep(1000);
+
+  const hacking_script ='autohacker.js';
+  const script_RAM = await ns.getScriptRam(hacking_script);
+  const threads = Math.floor(server_RAM / script_RAM);
+  var overage = targets.length - purchased_servers.length;
+
+  if (overage < 0)
+  {
+    var current_target = 0;
+
+    for (var i=0; i<purchased_servers.length; i++)
+    {
+      await ns.scp(hacking_script,'home',purchased_servers[i]);
+      var target = [];
+
+      if (current_target < targets.length)
+      {
+        current_target--;
+      }
+
+      for (var j=0; j<4; j++)
+      {
+        target[j] = targets[current_target];
+      }
+
+      current_target++;
+      await ns.exec(hacking_script,purchased_servers[i],threads,target[0],target[1],target[2],target[3]);
+    }
+    await ns.sleep(1000);
+  }
+  else
+  {
+    var current_target = 0;
+
+    for (var i=0; i<purchased_servers.length; i++)
+    {
+      await ns.scp(hacking_script,'home',purchased_servers[i]);
+      var target = [];
+
+      if (overage > 2)
+      {
+        target.push(targets[current_target]);
+        target.push(targets[current_target+1]);
+        target.push(targets[current_target+2]);
+        target.push(targets[current_target+3]);
+        overage = overage - 3;
+        current_target = current_target + 4;
+      }
+      else if (overage > 1)
+      {
+        target.push(targets[current_target]);
+        target.push(targets[current_target+1]);
+        target.push(targets[current_target+2]);
+        target.push(targets[current_target+2]);
+        overage = overage - 2;
+        current_target = current_target + 3;
+      }
+      else if (overage > 0)
+      {
+        target.push(targets[current_target]);
+        target.push(targets[current_target]);
+        target.push(targets[current_target+1]);
+        target.push(targets[current_target+1]);
+        overage = overage - 1;
+        current_target = current_target + 2;
+      }
+      else
+      {
+        target.push(targets[current_target]);
+        target.push(targets[current_target]);
+        target.push(targets[current_target]);
+        target.push(targets[current_target]);
+        current_target++;
+      }
+      await ns.exec(hacking_script,purchased_servers[i],threads,target[0],target[1],target[2],target[3]);
+      await ns.sleep(1000);
+    }
+  
+    if (UPGRADE)
+    {
+      await ns.toast('SERVER UPGRADES complete ('+await ns.nFormat(total_cost,'$0.000a')+')','warning',15000);
+    }
+    else
+    {
+      await ns.toast('SERVER DEPLOYMENT complete ('+await ns.nFormat(total_cost,'$0.000a')+')','warning',15000);
+    }
+    await ns.sleep(1000);
+  }
+}
+await ns.sleep(1000); } // end main
