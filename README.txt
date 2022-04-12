@@ -11,7 +11,7 @@ If you couldn't afford to buy one immediately, buy a TOR Router as soon as you c
 
 Go ahead and run 'servers.js'. If you don't have enough money to make it happen, it'll tell you how much you need... then you just wait until you can afford it and re-run.
 
-If your hack skill is high enough to let you, and it wouldn't be faster to just buy the program, don't be afraid to go to the 'Create Program' menu and write a program yourself -- especially if it's one of the ones that opens ports. The faster you can get your hands on those, the better!
+If your hack skill is high enough to let you, and it wouldn't be faster to just buy the program, don't be afraid to go to the 'Create Program' menu and write a program yourself -- especially if it's one of the ones that opens ports. The faster you can get your hands on those, the better! Personally, however, I prefer to just buy them and spend my 'working' time gaining reputation with a faction -- I rarely write my own programs.
 
 As far as factions go, don't really bother joining any until you get a chance to join Sector-12. Work for them and build up reputation and save up cash to buy the Cashroot starter kit as soon as you are able to do so. This'll let you start with $1M and the BruteSSH.exe program. This is key to getting off to a quick start after future resets.
 
