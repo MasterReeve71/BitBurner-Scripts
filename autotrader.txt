@@ -1,22 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////////
-// This script buys and sells scripts automatically, aiming to generate a profit. //
-// It's written so that, at the beginning, it'll keep you from going below        //
-// $10.000k, but as your sales generate more and more income, this minimum amount //
-// of cash that it will keep for you grows, so that you have more available cash  //
-// to work with to do what you need to do in the game. Also, spending too much    //
-// cash won't really affect how this script works. If you spend a large amount of //
-// your available cash, it'll end up selling your stocks eventually and, if       //
-// necessary, lower your minimum amount of cash kept until it's able to re-build  //
-// to the higher numbers.                                                         //
-//                                                                                //
-// This script REQUIRES that you have purchased these at the stock market:        //
-// 1) a WSE account                                                               //
-// 2) TIX API access                                                              //
-// 3) 4S Market Data TIX API access                                               //
-// 4) 4s Market Data access                                                       //
-//                                                                                //
-// The script will NOT run if you do not own those four items.                    //
-////////////////////////////////////////////////////////////////////////////////////
 export async function main(ns)
 { 
   await ns.disableLog('ALL');
@@ -63,6 +44,7 @@ export async function main(ns)
       if (playerMoney - moneyKeep > ns.stock.getPurchaseCost(stock,minSharePer, "Long")) 
       { 
         var shares = Math.min((playerMoney - moneyKeep - 100000) / askPrice, maxShares);
+        
         ns.stock.buy(stock, shares);
         ns.toast('Bought '+shares+' of '+stock,'info',5000);
       }
@@ -75,7 +57,7 @@ export async function main(ns)
 
     if (forecast < 0.5) 
     { 
-      ns.toast('Sold '+shares+' of '+stock+': '+ns.nFormat(ns.stock.sell(stock, position[0]),'$0.000a'),'info',5000);
+      ns.toast('Sold '+shares+' of '+stock+': '+ns.nFormat(ns.stock.sell(stock, position[0]),'$0a'),'info',5000);
 
       var cash = ns.getServerMoneyAvailable('home');
 

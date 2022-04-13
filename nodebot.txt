@@ -1,45 +1,79 @@
 export async function main(ns)
-{ await ns.disableLog('ALL');
+{ 
+  await ns.disableLog('ALL');
+
   while(true)
-  { var min_cash=10000;
+  { 
+    var min_cash=10000;
     var num=await ns.hacknet.numNodes();
-    for (var i=1; i<num; i++) { min_cash=min_cash*3; }
+
+    for (var i=1; i<num; i++) 
+    { 
+      min_cash=min_cash*3; 
+    }
+
     var cash=await ns.getServerMoneyAvailable('home');
     var node=0;
     var item='Node';
+    var nodeCost = await ns.hacknet.getPurchaseNodeCost();
     var lowest=min_cash*3;
+
+    if (lowest < nodeCost)
+    {
+      lowest = nodeCost;
+    }
+
     for (var i=0; i<num; i++)
-    { var cost=await ns.hacknet.getLevelUpgradeCost(i,1);
+    { 
+      var cost=await ns.hacknet.getLevelUpgradeCost(i,1);
       var count=await ns.hacknet.getNodeStats(i).level;
-      if (count<200 && cost<lowest) { lowest=cost; node=i; item='Level'; }
+
+      if (count<200 && cost<lowest) 
+      { 
+        lowest=cost; node=i; item='Level'; 
+      }
+
       cost=await ns.hacknet.getRamUpgradeCost(i,1);
       count=await ns.hacknet.getNodeStats(i).ram;
-      if (count<64 && cost<lowest) { lowest=cost; node=i; item='RAM'; }
+
+      if (count<64 && cost<lowest) 
+      { 
+        lowest=cost; node=i; item='RAM'; 
+      }
+
       cost=await ns.hacknet.getCoreUpgradeCost(i,1);
       count=await ns.hacknet.getNodeStats(i).cores;
-      if (count<16 && cost<lowest) { lowest=cost; node=i; item='Core'; }
+
+      if (count<16 && cost<lowest) 
+      { 
+        lowest=cost; node=i; item='Core'; 
+      }
     }
+
     if (cash>min_cash+lowest)
     {
       if (item=='Node') 
       { 
         await ns.hacknet.purchaseNode();
-        await ns.toast('new node purchased ('+await ns.nFormat(lowest,'$0.000a')+')','warning',1500);
+        await ns.toast('new node purchased ('+await ns.nFormat(lowest,'$0a')+')','warning',1500);
       }
+
       if (item=='Level') 
       { 
         await ns.hacknet.upgradeLevel(node);
-        await ns.toast('node('+node+'): +LVL ('+await ns.nFormat(lowest,'$0.000a')+')','warning',1500);
+        await ns.toast('node('+node+'): +LVL ('+await ns.nFormat(lowest,'$0a')+')','warning',1500);
       }
+
       if (item=='RAM') 
       { 
         await ns.hacknet.upgradeRam(node); 
-        await ns.toast('node('+node+'): +RAM ('+await ns.nFormat(lowest,'$0.000a')+')','warning',1500);
+        await ns.toast('node('+node+'): +RAM ('+await ns.nFormat(lowest,'$0a')+')','warning',1500);
       }
+
       if (item=='Core') 
       { 
         await ns.hacknet.upgradeCore(node);
-        await ns.toast('node('+node+'): +CPU ('+await ns.nFormat(lowest,'$0.000a')+')','warning',1500);
+        await ns.toast('node('+node+'): +CPU ('+await ns.nFormat(lowest,'$0a')+')','warning',1500);
       }
     }
     await ns.sleep(3000);

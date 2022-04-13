@@ -12,8 +12,8 @@ export async function main(ns)
   await ns.disableLog('ALL');
   
   const host=[ns.args[0],ns.args[1],ns.args[2],ns.args[3]];
-  const targetCash=[(ns.getServerMaxMoney(host[0]))*0.75,(ns.getServerMaxMoney(host[1]))*0.75,(ns.getServerMaxMoney(host[2]))*0.75,(ns.getServerMaxMoney(host[3]))*0.75];
-  const targetSec=[(ns.getServerMinSecurityLevel(host[0])*1.5),(ns.getServerMinSecurityLevel(host[1])*1.5),(ns.getServerMinSecurityLevel(host[2])*1.5),(ns.getServerMinSecurityLevel(host[3])*1.5)];
+  const targetCash=[(ns.getServerMaxMoney(host[0]))*0.85,(ns.getServerMaxMoney(host[1]))*0.85,(ns.getServerMaxMoney(host[2]))*0.85,(ns.getServerMaxMoney(host[3]))*0.85];
+  const targetSec=[(ns.getServerMinSecurityLevel(host[0])*1.25),(ns.getServerMinSecurityLevel(host[1])*1.25),(ns.getServerMinSecurityLevel(host[2])*1.25),(ns.getServerMinSecurityLevel(host[3])*1.25)];
  
   var hacking = false;
 
@@ -49,11 +49,12 @@ export async function main(ns)
         { 
           if (level <= mySkill)
           { 
-            await ns.toast('hack('+host[i]+'): '+ns.nFormat(await ns.hack(host[i]),"$0.000a"),'success',2000);
+            const earnings = await ns.hack(host[i]);
+            await ns.toast('hack('+host[i]+'): '+ns.nFormat(earnings,"$0a"),'success',2000);
           }
         }
       }
-      await ns.sleep(1000);
+      await ns.sleep(500);
     }
   }
 }

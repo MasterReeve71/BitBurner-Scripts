@@ -13,9 +13,11 @@ Go ahead and run 'servers.js'. If you don't have enough money to make it happen,
 
 If your hack skill is high enough to let you, and it wouldn't be faster to just buy the program, don't be afraid to go to the 'Create Program' menu and write a program yourself -- especially if it's one of the ones that opens ports. The faster you can get your hands on those, the better! Personally, however, I prefer to just buy them and spend my 'working' time gaining reputation with a faction -- I rarely write my own programs.
 
-As far as factions go, don't really bother joining any until you get a chance to join Sector-12. Work for them and build up reputation and save up cash to buy the Cashroot starter kit as soon as you are able to do so. This'll let you start with $1M and the BruteSSH.exe program. This is key to getting off to a quick start after future resets.
+As far as factions go, don't really bother joining any until you get a chance to join Sector-12. Work for them and build up reputation and save up cash to buy the Cashroot starter kit as soon as you are able to do so. This'll let you start with $1M and the BruteSSH.exe program.
 
-With that done, start focusing on getting all the augs for every possible faction, by joining that faction and working for them to improve reputation to the point that you can just save up money and buy stuff... then install/reset.
+Eventually, you'll also want to join the BitRunners faction and get the BitRunners Neurolink augmentation. This augmentation has you start with the FTPCrack.exe and relaySMTP.exe programs.
+
+You can get whatever other augmentations you want, especially those that'll affect the speed, power, and ability of all your various hacking statistics.
 
 Once you've cleaned a faction out of its augmentations, don't bother joining them again in future iterations (unless -everything- resets... which will, eventually, happen -- but I'm not going to give spoilers in this readme).
 

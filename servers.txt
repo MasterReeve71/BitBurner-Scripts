@@ -2,7 +2,7 @@ export async function main(ns) {
 
 await ns.disableLog('ALL');
 
-const purchased_servers = ['srv01','srv02','srv03','srv04','srv05','srv06','srv07','srv08','srv09','srv10','srv11','srv12','srv13','srv14','srv15','srv16','srv17','srv18','srv19','srv20','srv21','srv22','srv23','srv24'];
+const purchased_servers = ['srv01','srv02','srv03','srv04','srv05','srv06','srv07','srv08','srv09','srv10','srv11','srv12','srv13','srv14','srv15','srv16','srv17','srv18','srv19','srv20','srv21','srv22','srv23','srv24','srv25'];
 const possible_targets = ['n00dles','foodnstuff','sigma-cosmetics','joesguns','nectar-net','hong-fang-tea','harakiri-sushi','neo-net','zer0','max-hardware','iron-gym','phantasy','silver-helix','omega-net','crush-fitness','johnson-ortho','the-hub','computek','netlink','rothman-uni','catalyst','summit-uni','rho-construction','millenium-fitness','aevum-police','alpha-ent','syscore','lexo-corp','snap-fitness','global-pharm','applied-energetics','unitalife','univ-energy','nova-med','zb-def','zb-institute','vitalife','titan-labs','solaris','microdyne','helios','deltaone','icarus','zeus-med','omnia','defcomm','galactic-cyber','infocomm','taiyang-digital','stormtech','aerocorp','clarkinc','omnitek','nwo','4sigma','blade','b-and-a','ecorp','fulcrumtech','megacorp','kuai-gong','fulcrumassets','powerhouse-fitness'];
 
 var UPGRADE = false;
@@ -83,8 +83,8 @@ else
   await ns.sleep(1000);
 
   const hacking_script ='autohacker.js';
-  const script_RAM = await ns.getScriptRam(hacking_script);
-  const threads = Math.floor(server_RAM / script_RAM);
+  const script_RAM = await ns.getScriptRam(hacking_script,'home');
+  const threads = Math.floor(server_RAM/script_RAM);
   var overage = targets.length - purchased_servers.length;
 
   if (overage < 0)
