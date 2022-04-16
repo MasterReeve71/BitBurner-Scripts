@@ -25,7 +25,10 @@ export async function main(ns) {
   }
 
   if (!await ns.scriptRunning('auto-trade.js', 'home')) {
-    await ns.exec('auto-trade.js', 'home', 1, minimum_cash_allowed);
+    try {
+      await ns.exec('auto-trade.js', 'home', 1, minimum_cash_allowed);
+    }
+    catch (error) { }
   }
 
   while (true) {
@@ -67,7 +70,7 @@ export async function main(ns) {
         }
       }
 
-      if (loop_count > 10) {
+      if (loop_count > 3) {
         loop_count = 1;
 
         const current_cash = await ns.getServerMoneyAvailable('home');
@@ -100,12 +103,7 @@ export async function main(ns) {
             break_point = 10000;
           }
 
-          //var x = Math.round(current_cash / break_point);
           var y = Math.round(current_cash / break_point);
-
-          //if (y < 1) {
-          //  y = 0.5;
-          //}
 
           minimum_cash_allowed = y * break_point;
 
@@ -114,7 +112,12 @@ export async function main(ns) {
           }
 
           await ns.exec('auto-node.js', 'home', 1, minimum_cash_allowed);
-          await ns.exec('auto-trade.js', 'home', 1, minimum_cash_allowed);
+
+          try {
+            await ns.exec('auto-trade.js', 'home', 1, minimum_cash_allowed);
+          }
+          catch (error) { }
+
           await ns.toast('MIN CASH UPDATE: ' + await ns.nFormat(minimum_cash_allowed, '$0a'), 'info', 15000);
         }
       }
@@ -131,7 +134,7 @@ export async function main(ns) {
       }
     }
 
-    if (loop_count > 15) {
+    if (loop_count > 3) {
       loop_count = 1;
 
       const current_cash = await ns.getServerMoneyAvailable('home');
@@ -164,12 +167,7 @@ export async function main(ns) {
           break_point = 10000;
         }
 
-        //var x = Math.round(current_cash / break_point);
         var y = Math.round(current_cash / break_point);
-
-        //if (y < 1) {
-        //  y = 0.5;
-        //}
 
         minimum_cash_allowed = y * break_point;
 
@@ -178,14 +176,19 @@ export async function main(ns) {
         }
 
         await ns.exec('auto-node.js', 'home', 1, minimum_cash_allowed);
-        await ns.exec('auto-trade.js', 'home', 1, minimum_cash_allowed);
+
+        try {
+          await ns.exec('auto-trade.js', 'home', 1, minimum_cash_allowed);
+        }
+        catch (error) { }
+
         await ns.toast('MIN CASH UPDATE: ' + await ns.nFormat(minimum_cash_allowed, '$0a'), 'info', 15000);
       }
     }
 
     loop_count++;
     server_check++;
-    await ns.sleep(5000);
+    await ns.sleep(10000);
   }
 } // end main
 
