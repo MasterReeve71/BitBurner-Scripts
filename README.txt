@@ -27,6 +27,8 @@ Any time you're starting over, such as after you've installed augmentations, do 
 8) as your money grows, select: Upgrade 'home' RAM until you've upgraded to at the needed 128GB of RAM on your 'home' server
 9) restart and type 'run start.js' to kick it off properly
 
+You should, of course, feel free to do more than the basics given in this outline if you know how and want to put in the extra effort to make things happen more quickly towards getting that 128GB of RAM.
+
 ----------------------------------------------------------------------
 
 All the scripts are set up to kick off automatically when you do 'run start.js'. Yes, all of them. 
