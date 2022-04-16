@@ -1,103 +1,227 @@
-export async function main(ns)
-{ 
+export async function main(ns) {
   await ns.disableLog('ALL');
 
-  var allsrv=await list_of_all_servers(ns,allsrv);
-  var list=[];
+  var allsrv = await list_of_all_servers(ns, allsrv);
+  var list = [];
 
-  for (var i=0; i<allsrv.length; i++)
-  { 
-    if (ns.getServerMaxMoney(allsrv[i])>0)
-    { 
+  for (var i = 0; i < allsrv.length; i++) {
+    if (ns.getServerMaxMoney(allsrv[i]) > 0) {
       list.push(allsrv[i]);
-      await ns.scp('autohacker.js','home',allsrv[i]);
+      await ns.scp('auto-hack.js', 'home', allsrv[i]);
     }
   }
-  var notDone=true;
 
-  while (notDone)
-  { 
-    var count=0;
+  var minimum_cash_allowed = 10000;
+  var notDone = true;
+  var loop_count = 1;
+  var server_check = 1;
 
-    for (var i=0; i<list.length; i++)
-    { 
-      if (ns.hasRootAccess(list[i]))
-      { 
-        count++;
+  if (!await ns.scriptRunning('auto-solve.js', 'home')) {
+    await ns.exec('auto-solve.js', 'home');
+  }
 
-        if (!ns.scriptRunning('autohacker.js',list[i]))
-        { 
-          await ns.killall(list[i]);
+  if (!await ns.scriptRunning('auto-node.js', 'home')) {
+    await ns.exec('auto-node.js', 'home', 1, minimum_cash_allowed);
+  }
 
-          if (ns.getServerMaxRam(list[i])>=ns.getScriptRam('autohacker.js',list[i]))
-          { 
-            await ns.exec('autohacker.js',list[i],Math.floor(ns.getServerMaxRam(list[i])/ns.getScriptRam('autohacker.js',list[i])),list[i],list[i],list[i],list[i]);
+  if (!await ns.scriptRunning('auto-trade.js', 'home')) {
+    await ns.exec('auto-trade.js', 'home', 1, minimum_cash_allowed);
+  }
+
+  while (true) {
+    var break_point = 1000000000000;
+
+    while (notDone) {
+      var count = 0;
+
+      for (var i = 0; i < list.length; i++) {
+        if (ns.hasRootAccess(list[i])) {
+          count++;
+
+          if (!ns.scriptRunning('auto-hack.js', list[i])) {
+            await ns.killall(list[i]);
+
+            if (ns.getServerMaxRam(list[i]) >= ns.getScriptRam('auto-hack.js', list[i])) {
+              await ns.exec('auto-hack.js', list[i], Math.floor(ns.getServerMaxRam(list[i]) / ns.getScriptRam('auto-hack.js', list[i])), list[i], list[i], list[i], list[i]);
+            }
+          }
+        }
+        else {
+          if (await ns.getServerNumPortsRequired(list[i]) > 0) {
+            await try_to_root(ns, list[i]);
+          }
+          else {
+            await ns.nuke(list[i]);
           }
         }
       }
-      else
-      { 
-        if (await ns.getServerNumPortsRequired(list[i])>0)
-        { 
-          await try_to_root(ns,list[i]);
+
+      if (count == list.length) {
+        notDone = false;
+      }
+
+      if (server_check > 60) {
+        if (!await ns.scriptRunning('servers.js', 'home')) {
+          await ns.exec('servers.js', 'home');
+          server_check = 1;
         }
-        else
-        { 
-          await ns.nuke(list[i]);
+      }
+
+      if (loop_count > 10) {
+        loop_count = 1;
+
+        const current_cash = await ns.getServerMoneyAvailable('home');
+
+        var updating_minimum_cash = false;
+
+        if (current_cash > minimum_cash_allowed * 1.2) {
+          updating_minimum_cash = true;
         }
+
+        if (current_cash <= minimum_cash_allowed * 0.9) {
+          updating_minimum_cash = true;
+        }
+
+        if (updating_minimum_cash) {
+          if (await ns.scriptRunning('auto-node.js', 'home')) {
+            await ns.scriptKill('auto-node.js', 'home');
+          }
+
+          if (await ns.scriptRunning('auto-trade.js', 'home')) {
+            await ns.scriptKill('auto-trade.js', 'home');
+          }
+
+          if (current_cash >= 1000000) {
+            while (break_point > current_cash) {
+              break_point = break_point / 1000;
+            }
+          }
+          else {
+            break_point = 10000;
+          }
+
+          //var x = Math.round(current_cash / break_point);
+          var y = Math.round(current_cash / break_point);
+
+          //if (y < 1) {
+          //  y = 0.5;
+          //}
+
+          minimum_cash_allowed = y * break_point;
+
+          if (minimum_cash_allowed < 10000) {
+            minimum_cash_allowed = 10000;
+          }
+
+          await ns.exec('auto-node.js', 'home', 1, minimum_cash_allowed);
+          await ns.exec('auto-trade.js', 'home', 1, minimum_cash_allowed);
+          await ns.toast('MIN CASH UPDATE: ' + await ns.nFormat(minimum_cash_allowed, '$0a'), 'info', 15000);
+        }
+      }
+
+      loop_count++;
+      server_check++;
+      await ns.sleep(5000);
+    }
+
+    if (server_check > 60) {
+      if (!await ns.scriptRunning('servers.js', 'home')) {
+        await ns.exec('servers.js', 'home');
+        server_check = 1;
       }
     }
 
-    if (count==list.length)
-    { 
-      notDone=false;
+    if (loop_count > 15) {
+      loop_count = 1;
+
+      const current_cash = await ns.getServerMoneyAvailable('home');
+
+      var updating_minimum_cash = false;
+
+      if (current_cash > minimum_cash_allowed * 1.2) {
+        updating_minimum_cash = true;
+      }
+
+      if (current_cash <= minimum_cash_allowed * 0.9) {
+        updating_minimum_cash = true;
+      }
+
+      if (updating_minimum_cash) {
+        if (await ns.scriptRunning('auto-node.js', 'home')) {
+          await ns.scriptKill('auto-node.js', 'home');
+        }
+
+        if (await ns.scriptRunning('auto-trade.js', 'home')) {
+          await ns.scriptKill('auto-trade.js', 'home');
+        }
+
+        if (current_cash >= 1000000) {
+          while (break_point > current_cash) {
+            break_point = break_point / 1000;
+          }
+        }
+        else {
+          break_point = 10000;
+        }
+
+        //var x = Math.round(current_cash / break_point);
+        var y = Math.round(current_cash / break_point);
+
+        //if (y < 1) {
+        //  y = 0.5;
+        //}
+
+        minimum_cash_allowed = y * break_point;
+
+        if (minimum_cash_allowed < 10000) {
+          minimum_cash_allowed = 10000;
+        }
+
+        await ns.exec('auto-node.js', 'home', 1, minimum_cash_allowed);
+        await ns.exec('auto-trade.js', 'home', 1, minimum_cash_allowed);
+        await ns.toast('MIN CASH UPDATE: ' + await ns.nFormat(minimum_cash_allowed, '$0a'), 'info', 15000);
+      }
     }
 
+    loop_count++;
+    server_check++;
     await ns.sleep(5000);
   }
-  await ns.toast('START: complete!','info',30000);
 } // end main
 
 /////////////////////////////////////////////////////////
 
-async function try_to_root(ns,host)
-{ 
-  var x=0;
+async function try_to_root(ns, host) {
+  var x = 0;
 
-  if (await ns.fileExists('BruteSSH.exe','home'))
-  { 
+  if (await ns.fileExists('BruteSSH.exe', 'home')) {
     await ns.brutessh(host);
     x++;
   }
 
-  if (await ns.fileExists('FTPCrack.exe','home'))
-  { 
+  if (await ns.fileExists('FTPCrack.exe', 'home')) {
     await ns.ftpcrack(host);
     x++;
   }
 
-  if (await ns.fileExists('relaySMTP.exe','home'))
-  { 
+  if (await ns.fileExists('relaySMTP.exe', 'home')) {
     await ns.relaysmtp(host);
     x++;
   }
 
-  if (await ns.fileExists('HTTPWorm.exe','home'))
-  { 
+  if (await ns.fileExists('HTTPWorm.exe', 'home')) {
     await ns.httpworm(host);
     x++;
   }
 
-  if (await ns.fileExists('SQLInject.exe','home'))
-  { 
+  if (await ns.fileExists('SQLInject.exe', 'home')) {
     await ns.sqlinject(host);
     x++;
   }
 
-  if (x >= await ns.getServerNumPortsRequired(host))
-  { 
+  if (x >= await ns.getServerNumPortsRequired(host)) {
     await ns.nuke(host);
-    await ns.toast('nuke('+host+')','info',2000);
+    await ns.toast('nuke(' + host + ')', 'info', 2000);
   }
 
   return;
@@ -105,17 +229,14 @@ async function try_to_root(ns,host)
 
 /////////////////////////////////////////////////////////
 
-async function list_of_all_servers(ns,list)
-{ 
-  const purchased_servers=['srv01','srv02','srv03','srv04','srv05','srv06','srv07','srv08','srv09','srv10','srv11','srv12','srv13','srv14','srv15','srv16','srv17','srv18','srv19','srv20','srv21','srv22','srv23','srv24','srv25'];
-  const hosts=await allServers(ns,'home');
+async function list_of_all_servers(ns, list) {
+  const purchased_servers = ['srv01', 'srv02', 'srv03', 'srv04', 'srv05', 'srv06', 'srv07', 'srv08', 'srv09', 'srv10', 'srv11', 'srv12', 'srv13', 'srv14', 'srv15', 'srv16', 'srv17', 'srv18', 'srv19', 'srv20', 'srv21', 'srv22', 'srv23', 'srv24', 'srv25'];
+  const hosts = await allServers(ns, 'home');
 
-  var list=[];
+  var list = [];
 
-  for (var i=0; i<hosts.length; i++)
-  { 
-    if (hosts[i]!='home'&&hosts[i]!='srv-nodebot'&&hosts[i]!='srv-stockbot'&&!purchased_servers.includes(hosts[i]))
-    { 
+  for (var i = 0; i < hosts.length; i++) {
+    if (hosts[i] != 'home' && hosts[i] != 'srv-nodebot' && hosts[i] != 'srv-stockbot' && !purchased_servers.includes(hosts[i])) {
       list.push(hosts[i]);
     }
   }
@@ -126,29 +247,24 @@ async function list_of_all_servers(ns,list)
 
 /////////////////////////////////////////////////////////
 
-async function allServers(ns,start,found)
-{ 
-  const purchased_servers=['srv01','srv02','srv03','srv04','srv05','srv06','srv07','srv08','srv09','srv10','srv11','srv12','srv13','srv14','srv15','srv16','srv17','srv18','srv19','srv20','srv21','srv22','srv23','srv24','srv25'];
+async function allServers(ns, start, found) {
+  const purchased_servers = ['srv01', 'srv02', 'srv03', 'srv04', 'srv05', 'srv06', 'srv07', 'srv08', 'srv09', 'srv10', 'srv11', 'srv12', 'srv13', 'srv14', 'srv15', 'srv16', 'srv17', 'srv18', 'srv19', 'srv20', 'srv21', 'srv22', 'srv23', 'srv24', 'srv25'];
 
-	if(!found)
-  { 
+  if (!found) {
     found = new Set([]);
   }
 
   const servers = new Set(await ns.scan(start));
 
-  for (const server of servers)
-  { 
-    if (!found.has(server))
-    { 
+  for (const server of servers) {
+    if (!found.has(server)) {
       found.add(server);
 
-      for (const result of await allServers(ns,server,found))
-      { 
+      for (const result of await allServers(ns, server, found)) {
         found.add(result);
       }
     }
-	await ns.sleep(10);
-  }  
+    await ns.sleep(10);
+  }
   return [...found];
-} // end allServers
+}

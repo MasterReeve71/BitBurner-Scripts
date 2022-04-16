@@ -1,0 +1,144 @@
+export async function main(ns) { // required integer argument: target minimum cash to keep on hand
+	await ns.disableLog('ALL');
+
+	const minimum_cash_allowed = ns.args[0] * 1.1; // set minimum cash allowed, with a 10% buffer
+	const fee = 100000;                            // standard commission fee of $100,000
+	const max_shares = 1000;                       // maximum number of shares to buy at one time
+	const stocks = await ns.stock.getSymbols();    // list of all stock symbols
+
+	await ns.sleep(10);
+
+	while (true) {
+		var current_cash = await ns.getServerMoneyAvailable('home'); // cash on hand
+		var capital = current_cash - minimum_cash_allowed;           // cash usable for purchases this pass
+		var portfolio = [];                                          // portfolio of owned stocks
+		var unowned = [];                                            // list of unowned stocks
+		var cost_of_purchases = 0;                                   // total cost of stocks bought this pass
+		var proceeds_from_sales = 0;                                 // total proceeds from stock sales this pass
+		var purchases = [];                                          // list of purchases to output at end of pass
+		var sales = [];                                              // list of sales to output at end of pass
+
+		// Build portfolio and list of unowned stocks
+		for (var i = 0; i < stocks.length; i++) {
+			const position = await ns.stock.getPosition(stocks[i]);  // get position on current stock
+
+			if (position[0] > 0) {                                   // if shares are owned, add to portfolio
+				portfolio.push([stocks[i], position[0]]);
+			}
+			else {                                                   // otherwise, add to list of unowned stocks
+				unowned.push(stocks[i]);
+			}
+			await ns.sleep(10);
+		} // end Build Portfolio
+
+		// Sort portfolio based on forecast, highest forecasts first
+		if (portfolio) {
+			for (var i = 1; i < portfolio.length; i++) {
+				const first_info = portfolio[0];                                      // get info for first stock
+				const current_info = portfolio[1];                                    // get info for current stock
+				const first_forecast = await ns.stock.getForecast(first_info[0]);     // get forecast for first stock
+				const current_forecast = await ns.stock.getForecast(current_info[0]); // get forecast for current stock
+
+				if (current_forecast > first_forecast) {  // if current stock forecast is better than first stock forecast:
+					var temp = portfolio[0];              // temporarily store first stock's info
+					portfolio[0] = portfolio[i];          // replace first stock's info with current stock's info
+					portfolio[i] = temp;                  // replace current stock's info with temporarily stored info
+				}
+				await ns.sleep(10);
+			} // end Sort portfolio
+
+			// Take actions on stocks in portfolio
+			for (var i = 0; i < portfolio.length; i++) {
+				const info = portfolio[i];                             // get info on current stock from portfolio
+				const name = info[0];                                  // get current stock's name
+				const forecast = await ns.stock.getForecast(name);     // get forecast for current stock
+
+				if (forecast >= 0.6 && capital > 0) {                 // if forecast for this stock is good:
+					var shares = max_shares;                           // number of shares per purchase
+					if (forecast >= 0.8) {                            // if forecast is EXTREMELY good:
+						shares = shares * 3;                           // triple number of shares to buy
+					}
+					const price = await ns.stock.getAskPrice(name)     // asking price for current stock
+					if ((price * shares) + fee > capital) {            // if capital isn't enough for number of shares
+						shares = Math.floor(capital / price * shares); // reduce number of shares to affordable amount
+						await ns.sleep(10);
+						const owned = info[1];                         // number of shares already owned
+						const max = await ns.stock.getMaxShares(name); // maximum possible shares ownable of this stock
+						if (shares > max - owned) {                    // if shares to buy would put us over max
+							shares = max - owned;                      //  adjust shares to buy to max purchasable
+						}
+					}
+					if (shares > 0) {                                  // if number of shares > 0
+
+						const cost = await ns.stock.buy(name, shares); // buy that many shares, store cost per share
+						const total = cost * shares;                   // total cost of shares purchases
+						capital = capital - (price * shares) - fee;    // reduce capital by total cost + fees
+						purchases.push(name);                          // add this stock to list of purchases
+						cost_of_purchases += total;                    // add this total to cost of purchases
+						await ns.sleep(10);
+					}
+				}
+
+				if (forecast < 0.5) {                                    // if forecast for this stock is bad, sell it
+					var shares = info[1];                                // get number of shares owned of current stock
+					const proceeds = await ns.stock.sell(name, shares);  // sell that many shares, store proceeds per share
+					const total = proceeds * shares;                     // total proceeds from sale of stock
+					sales.push(name);                                    // add this stock to list of sales
+					proceeds_from_sales += total;                        // add this total to proceeds from sales
+					await ns.sleep(10);
+				}
+			} // end Take action on owned stock
+		}
+
+		// Sort unowned stocks based on forecast, highest forecasts first
+		for (var i = 1; i < unowned.length; i++) {
+			const first = unowned[0];                                     // get info for first stock
+			const current = unowned[1];                                   // get info for current stock
+			const first_forecast = await ns.stock.getForecast(first);     // get forecast for first stock
+			const current_forecast = await ns.stock.getForecast(current); // get forecast for current
+
+			if (current_forecast > first_forecast) { // if current stock forecast is better than first stock forecast:
+				var temp = unowned[0];               // temporarily store first stock's info
+				unowned[0] = unowned[i];             // replace first stock's info with current stock's info
+				unowned[i] = temp;                   // replace current stock's info with temporarily stored info
+			}
+			await ns.sleep(10);
+		} // end Sort unowned stocks
+
+		// Take actions on unowned stock
+		for (var i = 0; i < unowned.length; i++) {
+			const forecast = await ns.stock.getForecast(unowned[i]);  // get forecast for current stock
+
+			if (forecast >= 0.6 && capital > 0) {                    // if forecast for this stock is good:
+				var shares = max_shares;                              // number of shares per purchase
+				if (forecast >= 0.8) {                               // if forecast is EXTREMELY good:
+					shares = shares * 3;                              // multiply number of shares to buy
+				}
+				const price = await ns.stock.getAskPrice(unowned[i])  // asking price for current stock
+				if ((price * shares) + fee > capital) {               // if capital isn't enough for number of shares
+					shares = Math.floor(capital / price * shares);    // reduce number of shares to affordable amount
+					await ns.sleep(10);
+				}
+				
+				if (shares > 0) {                                        // if number of shares > 0
+					const cost = await ns.stock.buy(unowned[i], shares); // buy that many shares, store cost per share
+					const total = cost * shares;                         // total cost of shares purchases					
+					capital = capital - (price * shares) - fee;          // reduce capital by total cost + fees
+					purchases.push(unowned[i]);                          // add this stock to list of purchases
+					cost_of_purchases += total;                          // add this total to cost of purchases
+					await ns.sleep(10);
+				}
+			}
+		} // end Take actions on unowned stock
+
+		if (cost_of_purchases > 0) {
+			await ns.toast('BUY STOCK (' + ns.nFormat(cost_of_purchases, '$0a') + '): ' + purchases,'warning',5000);
+		}
+
+		if (proceeds_from_sales > 0) {
+			await ns.toast('SELL STOCK (' + ns.nFormat(proceeds_from_sales, '$0a') + '): ' + sales,'success',5000);
+		}
+
+		await ns.sleep(5000);
+	} // end while
+} // end main

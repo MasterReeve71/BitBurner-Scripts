@@ -16,11 +16,11 @@ if (await ns.serverExists(purchased_servers[0]))
 
 if (UPGRADE)
 {
-  await ns.toast('UPGRADING SERVERS','info',10000);
+  await ns.toast('UPGRADING SERVERS','info',15000);
 }
 else
 {
-  await ns.toast('DEPLOYING SERVERS','info',10000);
+  await ns.toast('DEPLOYING SERVERS','info',15000);
 }
 
 await ns.sleep(1000);
@@ -56,11 +56,11 @@ if (await ns.getServerMoneyAvailable('home') < total_cost)
 {
   if (UPGRADE)
   {
-    await ns.toast('SERVER UPGRADES require '+await ns.nFormat(total_cost,'$0.000a'),'error',15000);
+    await ns.toast('SERVER UPGRADES require '+await ns.nFormat(total_cost,'$0.0a'),'error',15000);
   }
   else
   {
-    await ns.toast('SERVER DEPLOYMENT requires '+await ns.nFormat(total_cost,'$0.000a'),'error',15000);
+    await ns.toast('SERVER DEPLOYMENT requires '+await ns.nFormat(total_cost,'$0.0a'),'error',15000);
   }
 }
 else
@@ -82,7 +82,7 @@ else
   }
   await ns.sleep(1000);
 
-  const hacking_script ='autohacker.js';
+  const hacking_script ='auto-hack.js';
   const script_RAM = await ns.getScriptRam(hacking_script,'home');
   const threads = Math.floor(server_RAM/script_RAM);
   var overage = targets.length - purchased_servers.length;
@@ -107,7 +107,16 @@ else
       }
 
       current_target++;
-      await ns.exec(hacking_script,purchased_servers[i],threads,target[0],target[1],target[2],target[3]);
+      if (i!=0)
+      {
+        await ns.exec(hacking_script,purchased_servers[i],threads,target[0],target[1],target[2],target[3]);
+      }
+      else
+      {
+        await ns.exec(hacking_script,purchased_servers[i],threads,target[2],target[2],target[3],target[3]);
+      }
+
+      
     }
     await ns.sleep(1000);
   }
@@ -155,7 +164,14 @@ else
         target.push(targets[current_target]);
         current_target++;
       }
-      await ns.exec(hacking_script,purchased_servers[i],threads,target[0],target[1],target[2],target[3]);
+      if (i!=0)
+      {
+        await ns.exec(hacking_script,purchased_servers[i],threads,target[0],target[1],target[2],target[3]);
+      }
+      else
+      {
+        await ns.exec(hacking_script,purchased_servers[i],threads,target[2],target[2],target[3],target[3]);
+      }
       await ns.sleep(1000);
     }
   

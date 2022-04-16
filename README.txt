@@ -1,17 +1,39 @@
 First, use 'nano <name>.js' to create each of the scripts, using the name of each text file as <name> in the command.
 
+If you have at least 128GB of RAM in your 'home' server, just type 'start' to kick things off!
+
+----------------------------------------------------------------------
+
+If you DO NOT have at least 128GB of RAM in your 'home' server, you need to rectify that situation in order to make full use of these scripts. To do this:
+
+
 Any time you're starting over, such as after you've installed augmentations, do the following:
+1) instead of starting by running start.js, start off by hacking easy servers
+2) start hacking n00dles:
+  a) copy auto-hack.js to n00dles
+  b) connect to n00dles
+  c) 'run nuke.exe'
+  d) 'run auto-hack.js n00dles n00dles n00dles n00dles'
+  e) 'home'
+3) start hacking foodnstuff:
+  a) copy auto-hack.js to foodnstuff
+  b) connect to foodnstuff 
+  c) 'run nuke.exe'
+  d) 'run auto-hack.js foodnstuff foodnstuff foodnstuff foodnstuff'
+  e) 'home'
+5) start hacking sigma-cosmetics, joesguns, hong-fang-tea, harakiri-sushi, and nectar-net, also, once you meet their hacking skill requirements -- don't forget to put the name of the server itself in FOUR TIMES as the auto-hack.js script's arguments!
+6) go into the city and start studying Computer Science at the university (the free study option) to build your hack skill more quickly -- this'll make the hacking on all these 'simple' servers go faster and earn you more money on the hacks
+7) go into the city and to the 'alpha ent' tech store
+8) as your money grows, select: Upgrade 'home' RAM until you've upgraded to at the needed 128GB of RAM on your 'home' server
+9) restart and type 'run start.js' to kick it off properly
 
-1) Start studying Computer Science at the university.
-2) If you can already afford it, buy a TOR router.
-3) Run 'start.js' at home.
-4) Run 'nodebot.js' at home.
+----------------------------------------------------------------------
 
-If you couldn't afford to buy one immediately, buy a TOR Router as soon as you can afford it! This will let you access the darkweb server. Any time you can afford to do so, you should buy a program from there, especially the five programs that open ports: BruteSSH.exe, FTPCrack.exe, relaySMTP.exe, HTTPWorm.exe, and SQLInject.exe. (In my experience, however, the 'Formulas.exe' program isn't very useful at all and can be skipped.)
+All the scripts are set up to kick off automatically when you do 'run start.js'. Yes, all of them. 
 
-Go ahead and run 'servers.js'. If you don't have enough money to make it happen, it'll tell you how much you need... then you just wait until you can afford it and re-run.
+HOWEVER: If you haven't gotten all the stock market stuff (WSE Account, Trade Information eXchange TIX API Access, 4S Market Data TIX API Access, and 4S Market Data Access), one of the scripts (auto-trade.js) will NOT be kicked off -- because it requires those purchases in order to run. Once you have them, though, that script will eventually be automatically kicked off.
 
-If your hack skill is high enough to let you, and it wouldn't be faster to just buy the program, don't be afraid to go to the 'Create Program' menu and write a program yourself -- especially if it's one of the ones that opens ports. The faster you can get your hands on those, the better! Personally, however, I prefer to just buy them and spend my 'working' time gaining reputation with a faction -- I rarely write my own programs.
+If you couldn't afford to buy one right away, buy a TOR Router as soon as you can afford it! This will let you access the darkweb server. Any time you can afford to do so, you should buy a program from the dark web, especially the five programs that open ports: BruteSSH.exe, FTPCrack.exe, relaySMTP.exe, HTTPWorm.exe, and SQLInject.exe. The other programs available there can be useful, also. (In my experience, however, the 'Formulas.exe' program isn't very useful at all and can be skipped.)
 
 As far as factions go, don't really bother joining any until you get a chance to join Sector-12. Work for them and build up reputation and save up cash to buy the Cashroot starter kit as soon as you are able to do so. This'll let you start with $1M and the BruteSSH.exe program.
 
@@ -21,8 +43,4 @@ You can get whatever other augmentations you want, especially those that'll affe
 
 Once you've cleaned a faction out of its augmentations, don't bother joining them again in future iterations (unless -everything- resets... which will, eventually, happen -- but I'm not going to give spoilers in this readme).
 
-If you want to save up money from hacks without spending on hacknet nodes, just kill the process that's running 'nodebot.js' until you've done what you wanted/needed the money for, then restart it to keep growing your hacknet nodes.
-
-There are servers (usually faction servers) that exist that have fair amounts of RAM, but zero max money. This makes them worthless for being hacking targets. However, you can copy 'autohacker.js' to them, figure out how many threads it can be run in on each of those servers, and then run the script on those servers with the script targeting other servers that *are* worth hacking. This can help you get more 'work' done on good targets.
-
-Eventually (and likely after a few resets, with augmentations helping you get off to a quicker start in terms of earning money), you'll be able to afford to go to the Stock Market and buy a WSE Account, Trade Information eXchange (TIX) API Access, 4S Market Data TIX API Access, and 4S Market Data Access. It doesn't matter in what order you buy these, but once you have them all, run 'autotrader.js'. This script -will- fail if you don't own all the previously-listed items.
+NOTE: The 'solve-contracts.js' script is something I found online. I didn't build any of the algoritms and functions that are included in it, but it seems to work for a majority of contracts out there. I have noticed that there are some contract types that this script does NOT handle, such as "Total Ways to Sum II", "HammingCodes: Integer to encoded Binary", and "Shorted Path in a Grid". Solving contracts isn't that imporant in the grand scheme of the game, however, so this is all included in my script as an 'add-on'.
