@@ -1,6 +1,6 @@
 First, use 'nano <name>.js' to create each of the scripts, using the name of each text file as <name> in the command.
 
-If you have at least 128GB of RAM in your 'home' server, just type 'start' to kick things off!
+If you have at least 128GB of RAM in your 'home' server, just type 'start' to kick things off! Also, go right into the city and start studying Computer Science (for free) at the university. If you can already afford it, also go by the tech store and buy a TOR Router.
 
 ----------------------------------------------------------------------
 
