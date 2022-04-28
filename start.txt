@@ -21,7 +21,289 @@ export async function main(ns) {
   }
 
   if (!await ns.scriptRunning('auto-node.js', 'home')) {
-    await ns.exec('auto-node.js', 'home', 1, minimum_cash_allowed);
+    await ns.exec('auto-node.js', 'hoexport async function main(ns) {
+	await ns.disableLog('ALL');
+
+	var list = await list_of_all_servers(ns);
+	var minimum_cash_allowed = 1000;
+	var need_setup = true;
+
+	await start_studying(ns);
+	await ns.toast('EXEC(initial_setup)','info',30000);
+
+	if (need_setup) {
+		minimum_cash_allowed = await initial_setup(ns, list, minimum_cash_allowed);
+		need_setup = false;
+	} // end if need_setup
+
+	await ns.toast('FINISH(initial_setup)','info',30000);
+	await ns.sleep(3000);
+	await ns.toast('EXEC(continued_maintenance)','info',30000);
+
+	while (true) {
+		minimum_cash_allowed = await continued_maintenance(ns, minimum_cash_allowed);
+		await ns.sleep(1000);
+	}
+
+} // end main
+
+//////////////////////////////////////////////////////////////////
+
+async function continued_maintenance(ns, min_cash) {
+	var cash_update = min_cash;
+	await auto_solve(ns);
+
+	for (var count = 1; count <= 10; count++) {
+		if (count == 10) { if (!ns.scriptRunning('servers.js', 'home')) { await ns.exec('servers.js', 'home'); } }
+		cash_update = await update_min_cash(ns, min_cash);
+		await ns.sleep(30000);
+	} // for count
+
+	await ns.sleep(10);
+	return cash_update;
+} // end continued_maintenance
+
+//////////////////////////////////////////////////////////////////
+
+async function initial_setup(ns, list, min_cash) {
+	var not_done = true;
+	var server_check = 0;
+	var darkweb = false;
+	var need_programs = true;
+	var need_RAM = true;
+	var cash_update = min_cash;
+
+	while (not_done) {
+		min_cash = cash_update;
+		await auto_solve(ns);
+		var count = 0;
+
+		for (var i = 0; i < list.length; i++) {
+			var hack = await hack_or_root(ns, list[i]);
+			if (hack) { count++; }
+		} // for list.length
+
+		if (server_check > 30) {
+			if (!ns.scriptRunning('servers.js', 'home')) {
+				await ns.exec('servers.js', 'home');
+				server_check = 1;
+			} // end if !scriptRunning
+		} // end if server_check
+
+		server_check++;
+
+		if (!darkweb) { darkweb = await buy_router(ns); }
+		if (need_programs) { need_programs = await buy_programs(ns); }
+		if (need_RAM) { need_RAM = await upgrade_RAM(ns, min_cash); }
+
+		cash_update = await update_min_cash(ns, min_cash);
+
+		if (count == list.length) { not_done = false; }
+		if (!darkweb) { not_done = true; }
+		if (need_programs) { not_done = true; }
+		if (need_RAM) { not_done = true; }
+
+		await ns.sleep(10);
+	} // end while not_done
+
+	await ns.sleep(10);
+	return cash_update;
+} // end initial_setup
+
+//////////////////////////////////////////////////////////////////
+
+async function update_min_cash(ns, min_cash) {
+	const current_cash = await ns.getServerMoneyAvailable('home');
+	var break_point = 1000000000000;
+	var updating = false;
+	var cash_update = min_cash;
+
+	if (current_cash > min_cash * 1.10) { updating = true; }
+	if (current_cash < min_cash * 0.75) { updating = true; }
+
+	if (updating) {
+		if (ns.scriptRunning('auto-node.js', 'home')) { await ns.scriptKill('auto-node.js', 'home'); }
+		if (ns.scriptRunning('auto-trade.js', 'home')) { await ns.scriptKill('auto-trade.js', 'home'); }
+		if (current_cash >= 1000) {
+			while (break_point > current_cash) { break_point *= 0.01; await ns.sleep(10); }
+		} // end current_cash >= 1000
+		//break_point *= 0.01;
+		var X = Math.round(current_cash / (break_point * 0.01));
+		X *= 0.01;
+		cash_update = Math.floor(X * break_point);
+		if (cash_update < 1000) { cash_update = 1000; }
+		await auto_node(ns, cash_update);
+		await auto_trade(ns, cash_update);
+		if (cash_update > min_cash) { await ns.toast('MIN CASH UPDATE: ' + await ns.nFormat(cash_update, '$0.00a'), 'info', 5000); }
+	} // end if updating
+	await ns.sleep(10);
+	return cash_update;
+} // end update_min_cash
+
+//////////////////////////////////////////////////////////////////
+
+async function buy_programs(ns) {
+	const progs = ['BruteSSH.exe', 'FTPCrack.exe', 'relaySMTP.exe', 'HTTPWorm.exe', 'SQLInject.exe'];
+	var need_programs = true;
+	var count = 0;
+
+	for (var i = 0; i < progs.length; i++) {
+		if (ns.fileExists(progs[i], 'home')) { count++; }
+		else { try { await ns.purchaseProgram(progs[i]); } catch (err) { } }
+	} // end for i < progs.length
+
+	if (count > 4) { need_programs = false; }
+
+	await ns.sleep(10);
+	return need_programs;
+} // end buy_programs
+
+//////////////////////////////////////////////////////////////////
+
+async function upgrade_RAM(ns, min_cash) {
+	var need_RAM = true;
+
+	if (ns.getServerMaxRam('home') >= 128) { need_RAM = false; }
+
+	if (need_RAM) {
+		if (ns.getServerMoneyAvailable('home') > ns.getUpgradeHomeRamCost() + min_cash) {
+			try { await ns.upgradeHomeRam(); } catch (err) { }
+		} // end if current_cash > RAM_cost
+	}
+
+	await ns.sleep(10);
+	return need_RAM;
+}// end upgrade_RAM
+
+//////////////////////////////////////////////////////////////////
+
+async function buy_router(ns) {
+	var success = false;
+	try { success = await ns.purchaseTor(); } catch (err) { }
+	await ns.sleep(10);
+	return success;
+} // end get_TOR_Router
+
+//////////////////////////////////////////////////////////////////
+
+async function auto_node(ns, min_cash) {
+	if (!ns.scriptRunning('auto-node.js', 'home')) { await ns.exec('auto-node.js', 'home', 1, min_cash); }
+	await ns.sleep(10);
+	return;
+} // end auto_trade;
+
+//////////////////////////////////////////////////////////////////
+
+async function auto_solve(ns) {
+	if (!ns.scriptRunning('auto-solve.js', 'home')) { await ns.exec('auto-solve.js', 'home'); }
+	await ns.sleep(10);
+	return;
+} // end auto_solve;
+
+//////////////////////////////////////////////////////////////////
+
+async function auto_trade(ns, min_cash) {
+	if (!ns.scriptRunning('auto-trade.js', 'home')) { await ns.exec('auto-trade.js', 'home', 1, min_cash); }
+	await ns.sleep(10);
+	return;
+} // end auto_trade;
+
+//////////////////////////////////////////////////////////////////
+
+async function hack_or_root(ns, target) {
+	var target_hacked = false;
+	const target_RAM = await ns.getServerMaxRam(target);
+	const script_RAM = await ns.getScriptRam('auto-hack.js', 'home');
+	const threads = Math.floor(target_RAM / script_RAM);
+
+	if (ns.hasRootAccess(target)) {
+		try { await ns.installBackdoor(target); } catch (err) { }
+		target_hacked = true;
+		if (!ns.scriptRunning('auto-hack.js', target)) {
+			if (!ns.fileExists('auto-hack.js', target)) { await ns.scp('auto-hack.js', 'home', target); }
+			await ns.killall(target);
+			if (target_RAM > script_RAM && ns.getServerMaxMoney(target) > 0) {
+				await ns.exec('auto-hack.js', target, threads, target, target, target, target);
+			} // end if getServerMaxRam >= getScriptRam
+		} // end if !scriptRunning
+	} // end if hasRootAccess
+	else {
+		if (ns.getServerNumPortsRequired(target) > 0) { await try_to_root(ns, target); }
+		else { await ns.nuke(target); }
+	} // end else if hasRootAccess
+	await ns.sleep(10);
+	return target_hacked;
+} // end hack_or_root
+
+//////////////////////////////////////////////////////////////////
+
+async function try_to_root(ns, host) {
+	const progs = ['BruteSSH.exe', 'FTPCrack.exe', 'relaySMTP.exe', 'HTTPWorm.exe', 'SQLInject.exe'];
+	var count = 0;
+
+	for (var i = 0; i < progs.length; i++) {
+		if (ns.fileExists(progs[i], 'home')) {
+			count++;
+			if (count == 1) { await ns.brutessh(host); }
+			if (count == 2) { await ns.ftpcrack(host); }
+			if (count == 3) { await ns.relaysmtp(host); }
+			if (count == 4) { await ns.httpworm(host); }
+			if (count == 5) { await ns.sqlinject(host); }
+		} // end if fileExists
+	} // end for i < progs.length
+	if (count >= ns.getServerNumPortsRequired(host)) { await ns.nuke(host); }
+	await ns.sleep(10);
+	return;
+} // end try_to_root
+
+//////////////////////////////////////////////////////////////////
+
+async function start_studying(ns) {
+	try { await ns.universityCourse('rothman university', 'Study Computer Science', false); } catch (err) { }
+	await ns.sleep(10);
+	return;
+} // end start_studying
+
+//////////////////////////////////////////////////////////////////
+
+async function buy_first_node(ns) {
+	if (await ns.hacknet.numNodes() < 1) { await ns.hacknet.purchaseNode(); }
+	await ns.sleep(10);
+	return;
+} // end buy_first_node
+
+//////////////////////////////////////////////////////////////////
+
+async function list_of_all_servers(ns) {
+	const purchased_servers = ['srv01', 'srv02', 'srv03', 'srv04', 'srv05', 'srv06', 'srv07', 'srv08', 'srv09', 'srv10', 'srv11', 'srv12', 'srv13', 'srv14', 'srv15', 'srv16', 'srv17', 'srv18', 'srv19', 'srv20', 'srv21', 'srv22', 'srv23', 'srv24', 'srv25'];
+	const hosts = await allServers(ns, 'home');
+	var list = [];
+
+	for (var i = 0; i < hosts.length; i++) {
+		if (hosts[i] != 'home' && !purchased_servers.includes(hosts[i])) { list.push(hosts[i]); }
+	}
+	await ns.sleep(10);
+	return list;
+}
+
+//////////////////////////////////////////////////////////////////
+
+async function allServers(ns, start, found) {
+	if (!found) { found = new Set([]); }
+	const servers = new Set(await ns.scan(start));
+
+	for (const server of servers) {
+		if (!found.has(server)) {
+			found.add(server);
+			for (const result of await allServers(ns, server, found)) { found.add(result); }
+		}
+		await ns.sleep(10);
+	}
+	await ns.sleep(10);
+	return [...found];
+}
+
+//////////////////////////////////////////////////////////////////me', 1, minimum_cash_allowed);
   }
 
   if (!await ns.scriptRunning('auto-trade.js', 'home')) {
