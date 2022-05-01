@@ -18,3 +18,5 @@ You still need to manually:
 2) build rep with factions
 3) buy augmentations from factions
 4) install augmentations
+5) buy all the stock market API stuff so auto-trade.js will work
+6) advance through the game to get some parts of the scripts to function
