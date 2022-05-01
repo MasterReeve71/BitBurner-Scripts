@@ -119,10 +119,10 @@ export async function main(ns) {
       }
       await ns.sleep(5000);
       if (UPGRADE) {
-        await ns.toast('SERVER UPGRADES complete (' + await ns.nFormat(total_cost, '$0.000a') + ')', 'warning', 10000);
+        await ns.toast('SERVERS UPGRADED (' + await ns.nFormat(total_cost, '$0.000a') + ')', 'warning', 10000);
       }
       else {
-        await ns.toast('SERVER DEPLOYMENT complete (' + await ns.nFormat(total_cost, '$0.000a') + ')', 'warning', 10000);
+        await ns.toast('SERVERS DEPLOYED (' + await ns.nFormat(total_cost, '$0.000a') + ')', 'warning', 10000);
       }
       await ns.sleep(10);
     }

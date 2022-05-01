@@ -17,7 +17,7 @@ export async function main(ns) {
         if (!hacking) {
           if (mySkill >= level) {
             hacking = true;
-            await ns.toast('hack(' + target + '): STARTED', 'info', 5000);
+            await ns.toast('hack(' + target + '): START', 'info', 5000);
           }
         }
         if (mySkill >= level) {
@@ -25,8 +25,8 @@ export async function main(ns) {
           else if (money < targetCash) { await ns.grow(target); }
           else {
             const earnings = await ns.hack(target);
-            if (earnings > await ns.getServerMoneyAvailable('home') * 0.05) {
-              await ns.toast('hack('+target+'): '+await ns.nFormat(earnings,'$0a'),'success',2000);
+            if (earnings > await ns.getServerMoneyAvailable('home') * 0.025) {
+              await ns.toast('hack('+target+'): '+await ns.nFormat(earnings,'$0.00a'),'success',2000);
             }
           }
         }

@@ -1,9 +1,9 @@
 export async function main(ns) { // required integer argument: target minimum cash to keep on hand
 	await ns.disableLog('ALL');
 	try {
-		const minimum_cash_allowed = ns.args[0] * 1.1; // set minimum cash allowed, with a 10% buffer
+		const minimum_cash_allowed = ns.args[0];       // set minimum cash allowed, with a 10% buffer
 		const fee = 100000;                            // standard commission fee of $100,000
-		const max_shares = 1000;                       // maximum number of shares to buy at one time
+		const max_shares = 10000;                      // maximum number of shares to buy at one time
 		const stocks = await ns.stock.getSymbols();    // list of all stock symbols
 
 		while (true) {
@@ -44,7 +44,6 @@ export async function main(ns) { // required integer argument: target minimum ca
 					const forecast = await ns.stock.getForecast(name);     // get forecast for current stock
 					if (forecast >= 0.6 && capital > 0) {                  // if forecast for this stock is good:
 						var shares = max_shares;                           // number of shares per purchase
-						if (forecast >= 0.8) { shares = shares * 3; }      // if forecast is EXTREMELY good triple number of shares to buy
 						const price = await ns.stock.getAskPrice(name)     // asking price for current stock
 						if ((price * shares) + fee > capital) {            // if capital isn't enough for number of shares
 							shares = Math.floor(capital / price * shares); // reduce number of shares to affordable amount
@@ -89,9 +88,6 @@ export async function main(ns) { // required integer argument: target minimum ca
 				const forecast = await ns.stock.getForecast(unowned[i]);  // get forecast for current stock
 				if (forecast >= 0.6 && capital > 0) {                     // if forecast for this stock is good:
 					var shares = max_shares;                              // number of shares per purchase
-					if (forecast >= 0.8) {                                // if forecast is EXTREMELY good:
-						shares = shares * 3;                              // multiply number of shares to buy
-					}
 					const price = await ns.stock.getAskPrice(unowned[i])  // asking price for current stock
 					if ((price * shares) + fee > capital) {               // if capital isn't enough for number of shares
 						shares = Math.floor(capital / price * shares);    // reduce number of shares to affordable amount
@@ -107,8 +103,8 @@ export async function main(ns) { // required integer argument: target minimum ca
 					}
 				}
 			} // end Take actions on unowned stock
-			if (cost_of_purchases > 0) { await ns.toast('BUY STOCK (' + ns.nFormat(cost_of_purchases, '$0a') + '): ' + purchases, 'warning', 5000); }
-			if (proceeds_from_sales > 0) { await ns.toast('SELL STOCK (' + ns.nFormat(proceeds_from_sales, '$0a') + '): ' + sales, 'success', 5000); }
+			if (cost_of_purchases > 0) { await ns.toast('buy_stock(' + purchases + '): ' + ns.nFormat(cost_of_purchases, '$0.00a'), 'warning', 3000); }
+			if (proceeds_from_sales > 0) { await ns.toast('sell_stock(' + sales + '): ' + ns.nFormat(proceeds_from_sales, '$0.00a'), 'success', 3000); }
 			await ns.sleep(5000);
 		} // end while
 	} catch (err) { }
