@@ -141,7 +141,7 @@ async function buy_programs(ns) {
 async function upgrade_RAM(ns, min_cash) {
 	var need_RAM = true;
 
-	if (ns.getServerMaxRam('home') >= 128) { need_RAM = false; }
+	if (ns.getServerMaxRam('home') >= 1024) { need_RAM = false; }
 
 	if (need_RAM) {
 		if (ns.getServerMoneyAvailable('home') > ns.getUpgradeHomeRamCost() + min_cash) {
