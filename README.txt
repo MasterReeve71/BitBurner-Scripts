@@ -32,4 +32,8 @@ after you've gotten root access on the target server, of coruse.
 Don't forget the 'analyze' the target server to find out how much RAM it has and run 'auto-hack.js'
 using as many threads as possible!
 
+You should also, of course, use your 'home' RAM to run 'auto-jack.js' using as many scripts as
+possible, with all four of the easiest target servers (n00dles, foodnstuff, sigma-cosmetics, and
+joesguns) for hacking, to help build your cash.
+
 Save up money and upgrade your 'home' RAM until you can run the start script.
