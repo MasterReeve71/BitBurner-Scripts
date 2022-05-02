@@ -25,15 +25,17 @@ Interestingly, this script seems to take more RAM to run on some 'home' servers 
 (If you're far enough into the game to understand that, you will. Otherwise, just take it as
 a given and assume that you might not have enough RAM.)
 
-If this is the case, you're going to have to manually copy the 'auto-hack.js' script to target
-servers and trigger it, targetting the server it's on as all four of the script's arguments,
-after you've gotten root access on the target server, of coruse.
+If this is the case, you're basically back to 'hacking 101'. Use the 'auto-hack.js' script by
+copying it to target servers and, once you've gotten root access on them, running the script
+(use as many threads as possible) to have the script target the server it's on (use the target
+server's name as all four of the scirpt's arguments).
 
-Don't forget the 'analyze' the target server to find out how much RAM it has and run 'auto-hack.js'
-using as many threads as possible!
+Don't forget to run 'auto-hack.js' on your 'home' server, too, using as many threads as possible.
+For this instance of the script, I recommend 'n00dles foodnstuff sigma-cosmetics joesguns' be 
+the four arguments used, so as to maximize speed of hacking and cash-gain from hacking.
 
-You should also, of course, use your 'home' RAM to run 'auto-jack.js' using as many scripts as
-possible, with all four of the easiest target servers (n00dles, foodnstuff, sigma-cosmetics, and
-joesguns) for hacking, to help build your cash.
+As you acquire port-opening programs, such as BruteSSH.exe, copy 'auto-hack.js' to the faction
+servers, such as CSEC, and run the script there to target the weak target servers (use as many
+threads as possible, as always) after you've rooted that server.
 
 Save up money and upgrade your 'home' RAM until you can run the start script.
