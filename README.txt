@@ -25,10 +25,11 @@ Interestingly, this script seems to take more RAM to run on some 'home' servers 
 (If you're far enough into the game to understand that, you will. Otherwise, just take it as
 a given and assume that you might not have enough RAM.)
 
-If this is the case, you're basically back to 'hacking 101'. Use the 'auto-hack.js' script by
-copying it to target servers and, once you've gotten root access on them, running the script
-(use as many threads as possible) to have the script target the server it's on (use the target
-server's name as all four of the scirpt's arguments).
+If this is the case, you're basically back to 'hacking 101':
+
+Use the 'auto-hack.js' script by copying it to target servers and, once you've gotten root access
+on them, running the script (use as many threads as possible) to have the script target the server
+it's on (use the target server's name as all four of the scirpt's arguments).
 
 Don't forget to run 'auto-hack.js' on your 'home' server, too, using as many threads as possible.
 For this instance of the script, I recommend 'n00dles foodnstuff sigma-cosmetics joesguns' be 
