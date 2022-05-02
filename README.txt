@@ -20,3 +20,16 @@ You still need to manually:
 4) install augmentations
 5) buy all the stock market API stuff so auto-trade.js will work
 6) advance through the game to get some parts of the scripts to function
+
+Interestingly, this script seems to take more RAM to run on some 'home' servers than on others.
+(If you're far enough into the game to understand that, you will. Otherwise, just take it as
+a given and assume that you might not have enough RAM.)
+
+If this is the case, you're going to have to manually copy the 'auto-hack.js' script to target
+servers and trigger it, targetting the server it's on as all four of the script's arguments,
+after you've gotten root access on the target server, of coruse.
+
+Don't forget the 'analyze' the target server to find out how much RAM it has and run 'auto-hack.js'
+using as many threads as possible!
+
+Save up money and upgrade your 'home' RAM until you can run the start script.
